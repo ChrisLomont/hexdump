@@ -1,4 +1,4 @@
-A nicer hexdump in C#/WPF
+A nicer console based hexdump utility in C#
 
 ![screenshot](hexdump.png)
 

@@ -1,8 +1,7 @@
 ﻿// Chris Lomont 2019
 // console mode Hex Dump
-using System;
-using System.Collections.Generic;
-using System.IO;
+
+
 
 /*
 TODO
@@ -69,7 +68,7 @@ namespace Lomont.hexdump
     {
         static void Usage()
         {
-
+            Console.WriteLine($" Usage: call with the file to dump on the command line");
         }
         static void Main(string[] args)
         {
@@ -80,7 +79,7 @@ namespace Lomont.hexdump
             }
             var dumper = new HexDumper();
             dumper.Dump(args[0]);
-            Console.WriteLine("hexdump v0.1, Chris Lomont, 2019");
+            Console.WriteLine("hexdump v0.2, Chris Lomont, 2019-2025");
             Environment.Exit(0);
         }
     }
@@ -91,7 +90,7 @@ namespace Lomont.hexdump
         {
             Console.Write(text);
         }
-        void WriteLine(string text="")
+        void WriteLine(string text = "")
         {
             Console.WriteLine(text);
         }
@@ -111,7 +110,7 @@ namespace Lomont.hexdump
                 data = reader;
                 dataLength = data.BaseStream.Length;
                 position = 0;
-                positionChars = (int)((Math.Ceiling(Math.Log(dataLength, 2))+3)/4);
+                positionChars = (int)((Math.Ceiling(Math.Log(dataLength, 2)) + 3) / 4);
                 positionFormat = $"{{0:X{positionChars}}}";
                 DumpHelper();
             }
@@ -133,13 +132,13 @@ namespace Lomont.hexdump
         {
             Console.ForegroundColor = outerBorderColor;
             Write(left.ToString());
-            for (var i = 0;i < positionChars+2; ++i)
+            for (var i = 0; i < positionChars + 2; ++i)
                 Write(m.ToString());
             Write(t.ToString());
             // bytes
             for (var i = 0; i < bytesPerLine; i += bytesPerGroup)
             {
-                for (var j = 0; j < 3*bytesPerGroup+1; ++j)
+                for (var j = 0; j < 3 * bytesPerGroup + 1; ++j)
                     Write(m.ToString());
                 Write(t.ToString());
             }
@@ -148,7 +147,7 @@ namespace Lomont.hexdump
             {
                 for (var j = 0; j < bytesPerGroup + 2; ++j)
                     Write(m.ToString());
-                if (i < bytesPerLine-bytesPerGroup)
+                if (i < bytesPerLine - bytesPerGroup)
                     Write(t.ToString());
             }
             WriteLine(r.ToString());
@@ -163,7 +162,7 @@ namespace Lomont.hexdump
             while (position < dataLength)
             {
                 SizeScreen();
-                DumpPage(position == 0 ? linesPerPage - 2: linesPerPage-2);
+                DumpPage(position == 0 ? linesPerPage - 2 : linesPerPage - 2);
                 if (!continuous && !Command())
                     break;
                 Console.CursorLeft = 0;
@@ -195,15 +194,13 @@ namespace Lomont.hexdump
 
                 if (k.Key == ConsoleKey.PageUp)
                 {
-                    position -= 2*(bytesPerLine * (linesPerPage - 2));
+                    position -= 2 * (bytesPerLine * (linesPerPage - 2));
                     if (position < 0) position = 0;
                     data.BaseStream.Position = position;
                     WriteLine(".................");
                     return true;
                 }
             }
-
-            return true;
         }
 
 
@@ -224,15 +221,15 @@ namespace Lomont.hexdump
             }
         }
 
-        static char UL = '┌';
-        static char UR = '┐';
-        static char UT = '┬';
-        static char LL = '└';
-        static char LR = '┘';
-        static char LT = '┴';
-        static char VS = '│';
-        static char VD = '│'; // wanted dashed, or lighter?
-        static char D  = '─';
+        const char UL = '┌';
+        static readonly char UR = '┐';
+        const char UT = '┬';
+        const char LL = '└';
+        const char LR = '┘';
+        const char LT = '┴';
+        const char VS = '│';
+        const char VD = '│'; // wanted dashed, or lighter?
+        const char D = '─';
         static ConsoleColor outerBorderColor = ConsoleColor.White;
         static ConsoleColor innerBorderColor = ConsoleColor.DarkGray;
         static ConsoleColor positionColor = ConsoleColor.Gray;
@@ -256,7 +253,7 @@ namespace Lomont.hexdump
             NonASCII     // 0x80-0xFF
         }
 
-        private static Dictionary<ByteType, ConsoleColor> colors = new Dictionary<ByteType, ConsoleColor>() 
+        private static Dictionary<ByteType, ConsoleColor> colors = new Dictionary<ByteType, ConsoleColor>()
         {
             {ByteType.Null        , ConsoleColor.DarkBlue},
             {ByteType.Control     , ConsoleColor.DarkYellow},
@@ -270,13 +267,13 @@ namespace Lomont.hexdump
             {ByteType.Lowercase   , ConsoleColor.Yellow},
         };
 
-        static ByteType [] types = new ByteType[256];
+        static ByteType[] types = new ByteType[256];
 
         static HexDumper()
         {// fill in type table
             for (var i = 0; i < 256; ++i)
                 types[i] = ByteType.Null; // blank them
-            for (var i = 0x30; i <=0x39; ++i)
+            for (var i = 0x30; i <= 0x39; ++i)
                 types[i] = ByteType.Digit;
             for (var i = 0x41; i <= 0x5A; ++i)
                 types[i] = ByteType.Uppercase;
@@ -285,11 +282,11 @@ namespace Lomont.hexdump
             for (var i = 0x80; i <= 0xFF; ++i)
                 types[i] = ByteType.NonASCII;
 
-            foreach (var i in new int[] { 0x20, 9, 10, 11, 12, 13 })
+            foreach (var i in new[] { 0x20, 9, 10, 11, 12, 13 })
                 types[i] = ByteType.WhiteSpace;
-            foreach (var i in new int[] { 0x24,0x2B,0x3C,0x3D,0x3E,0x5E,0x60,0x60,0x7C,0x7E })
+            foreach (var i in new[] { 0x24, 0x2B, 0x3C, 0x3D, 0x3E, 0x5E, 0x60, 0x60, 0x7C, 0x7E })
                 types[i] = ByteType.Symbol;
-            for (var i = 0x01; i <=0x01F; ++i)
+            for (var i = 0x01; i <= 0x01F; ++i)
                 if (types[i] == ByteType.Null)
                     types[i] = ByteType.Control;
             types[0x7F] = ByteType.Control;
@@ -324,7 +321,7 @@ namespace Lomont.hexdump
             Console.ForegroundColor = positionColor;
             Write(String.Format(positionFormat, position));
             Console.ForegroundColor = outerBorderColor;
-            Write(" "+VS+" ");
+            Write(" " + VS + " ");
             var bytes = Get(bytesPerLine);
             // hex bytes
             for (var i = 0; i < bytesPerLine; ++i)
@@ -364,14 +361,14 @@ namespace Lomont.hexdump
                     if (!IsPrintable(b))
                         Write(".");
                     else
-                        Write(((char) bytes[i]).ToString());
+                        Write(((char)bytes[i]).ToString());
                 }
                 else
                 {
                     Write(" ");
                 }
 
-                if (i == bytesPerLine-1)
+                if (i == bytesPerLine - 1)
                 {
                     Console.ForegroundColor = outerBorderColor;
                     Write(" " + VD);
@@ -387,7 +384,7 @@ namespace Lomont.hexdump
 
         byte[] Get(long length)
         {
-            length = Math.Min(length,dataLength - position);
+            length = Math.Min(length, dataLength - position);
             var b = data.ReadBytes((int)length);
             position += length;
             return b;
